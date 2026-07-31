@@ -32,7 +32,7 @@ jobs:
       - name: Zip backend directory contents for deployment
         run: |
           cd backend
-          zip -r ../backend.zip . -x "*.env*" -x "*__pycache__*"
+          zip -r ../backend.zip * -x "*.env*" -x "*__pycache__*"
 
       - name: Upload Artifact for Deployment
         uses: actions/upload-artifact@v4
