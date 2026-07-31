@@ -1173,8 +1173,9 @@ function SkillsExpertise({ onSelectSkill, theme }: { onSelectSkill?: (skill: str
                   animate={{ opacity: 1, y: 0 }}
                   whileHover={{ scale: 1.05 }}
                   transition={{ delay: sIdx * 0.05 }}
-                  className={`px-4 py-2 rounded-full text-[13px] font-medium tracking-wide transition-all cursor-default select-none shadow-sm border-0 outline-none ${
-                    theme === 'dark' ? 'bg-zinc-900 text-zinc-200' : 'bg-[#1A1A1A] text-white'
+                  onClick={() => onSelectSkill?.(skill)}
+                  className={`px-4 py-2 rounded-full text-[13px] font-medium tracking-wide transition-all cursor-pointer select-none shadow-sm border-0 outline-none ${
+                    theme === 'dark' ? 'bg-zinc-900 text-zinc-200 hover:bg-zinc-800' : 'bg-[#1A1A1A] text-white hover:bg-zinc-800'
                   }`}
                 >
                   {skill}
