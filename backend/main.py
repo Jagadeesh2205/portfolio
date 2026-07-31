@@ -217,12 +217,30 @@ def get_local_response(query: str) -> ChatResponse:
 
 @app.post("/api/chat", response_model=ChatResponse)
 async def chat_endpoint(request: ChatRequest):
-    # Fast-path: well-covered topics (about, projects, skills, experience, CGPA,
-    # education, contact, known projects) answer instantly from verified data —
-    # no LLM round-trip, so no latency and no risk of a weak model hallucinating.
-    instant = match_known_answer(request.query)
-    if instant is not None:
-        return instant
+    # --- Tier 1: Exact-match fast-path (ALWAYS fires) ---
+    # The quick-action buttons send these exact strings. They should respond
+    # instantly regardless of conversation history.
+    BUTTON_QUERIES = {
+        "tell me about yourself.",
+        "show me your projects.",
+        "tell me about your work experience.",
+        "what are your skills?",
+        "how can i contact you?",
+    }
+    if request.query.lower().strip() in BUTTON_QUERIES:
+        instant = match_known_answer(request.query)
+        if instant is not None:
+            return instant
+
+    # --- Tier 2: Broad keyword fast-path (first turn only) ---
+    # On the opening message (no history), use keyword matching for common
+    # topics so the very first interaction is snappy. Once a conversation is
+    # going, let the LLM handle everything so nuanced follow-ups like
+    # "where did you use networkX" get proper AI-generated answers.
+    if not request.history:
+        instant = match_known_answer(request.query)
+        if instant is not None:
+            return instant
 
     if not client:
         return get_local_response(request.query)
